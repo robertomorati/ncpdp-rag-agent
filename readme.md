@@ -5,7 +5,7 @@ A simple Python RAG (Retrieval-Augmented Generation) assistant that answers ques
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
+git clone git@github.com:robertomorati/ncpdp-rag-agent.git
 cd ncpdp-rag-agent
 ```
 
@@ -35,7 +35,7 @@ brew install ffmpeg
 Create a `.env` file:
 
 ```env
-GEMINI_API_KEY=your_api_key_here
+GEMINI_API_KEY=<YOUR_API_KEY>
 EMBEDDING_MODEL=all-MiniLM-L6-v2
 CHROMA_COLLECTION=ncpdp_guide
 CHROMA_PATH=./chroma_db
