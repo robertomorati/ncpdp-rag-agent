@@ -1,8 +1,8 @@
-from app.rag import RAGAssistant
+from app.agent import NCPDPAgent
 
 
 def main() -> None:
-    assistant = RAGAssistant()
+    agent = NCPDPAgent()
 
     print("NCPDP RAG Agent")
     print("Type your question or 'exit' to quit.\n")
@@ -18,10 +18,21 @@ def main() -> None:
             continue
 
         try:
-            answer = assistant.ask(question)
-            print("\nAnswer:")
-            print(answer)
+            result = agent.run(question)
+
+            print("\n--- Judgment ---")
+            print(result["judgment"])
+
+            if result["rewritten_query"]:
+                print("Rewritten query:", result["rewritten_query"])
+
+            print("\n--- Reflection ---")
+            print(result["reflection"])
+
+            print("\n--- Final Answer ---")
+            print(result["final_answer"])
             print("\n" + "-" * 60 + "\n")
+
         except Exception as exc:
             print(f"Error: {exc}")
 

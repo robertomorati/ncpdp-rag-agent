@@ -26,7 +26,7 @@ class RAGAssistant:
         genai.configure(api_key=GEMINI_API_KEY)
         self.llm = genai.GenerativeModel(LLM_MODEL)
 
-    def retrieve(self, question: str, top_k: int = TOP_K) -> List[Tuple[str, Dict[str, Any]]]:
+    def retrieve(self, question: str, top_k: int = TOP_K):
         question_embedding = self.embedding_model.encode([question]).tolist()[0]
 
         results = self.collection.query(
@@ -39,7 +39,7 @@ class RAGAssistant:
 
         return list(zip(documents, metadatas))
 
-    def format_contexts(self, contexts: List[Tuple[str, Dict[str, Any]]], max_chars: int = 900) -> str:
+    def format_contexts(self, contexts, max_chars: int = 900) -> str:
         formatted = []
         for i, (ctx, meta) in enumerate(contexts, start=1):
             source = meta.get("source", "unknown")
@@ -48,11 +48,11 @@ class RAGAssistant:
             formatted.append(f"Context {i} | source={source} | chunk={chunk_index}\n{shortened}")
         return "\n\n".join(formatted)
 
-    def generate_answer(self, question: str, contexts: List[Tuple[str, Dict[str, Any]]]) -> str:
+    def generate_answer(self, question: str, contexts) -> str:
         if not contexts:
             return "Not found in provided database."
 
-        joined_context = self.format_contexts(contexts)
+        joined_context = self.format_contexts(contexts, max_chars=900)
 
         prompt = f"""
 You are an assistant specialized in the NCPDP guide, named NCPDP Assistant.

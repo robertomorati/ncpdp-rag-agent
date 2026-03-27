@@ -7,6 +7,8 @@ from app.config import (
     CHROMA_PATH,
     EMBEDDING_MODEL,
     PROCESSED_TEXT_PATH,
+    PROCESSED_AUDIO_TEXT_PATH,
+    PDF_PATH,
 )
 
 
@@ -16,8 +18,8 @@ def load_text(path: str) -> str:
 
 
 def build_vector_store() -> None:
-    pdf_text = load_text("data/processed/pdf_text.txt")
-    audio_text = load_text("data/processed/audio_text.txt")
+    pdf_text = load_text(PROCESSED_TEXT_PATH)
+    audio_text = load_text(PROCESSED_AUDIO_TEXT_PATH)
 
     pdf_chunks = chunk_text(pdf_text)
     audio_chunks = chunk_text(audio_text)
@@ -26,6 +28,13 @@ def build_vector_store() -> None:
     print(f"Audio chunks: {len(audio_chunks)}")
 
     client = chromadb.PersistentClient(path=CHROMA_PATH)
+    
+    # cleanup the collection to avoid duplicated chunks
+    try:
+        client.delete_collection(CHROMA_COLLECTION)
+    except Exception:
+        pass
+
     collection = client.get_or_create_collection(name=CHROMA_COLLECTION)
 
     model = SentenceTransformer(EMBEDDING_MODEL)
