@@ -1,23 +1,25 @@
 graph TD
-    A[User Question] --> B[search_kb]
-    B --> C[judge_context]
+    K[PDF Files] --> L[Extract PDF Text]
+    M[Audio File] --> N[Transcribe Audio]
+    L --> O[Chunking]
+    N --> O
+    O --> P[Embeddings]
+    P --> Q[ChromaDB Vector Store]
 
-    C -->|sufficient = false| D[rewrite query]
-    D --> E[search_kb again]
+    A[User Question] --> B[Search Knowledge Base]
+    Q --> B
+    B --> C[Judge Retrieved Context]
 
-    C -->|sufficient = true| F[generate_answer]
+    C -->|sufficient = false| D[Rewrite Query]
+    D --> E[Search Knowledge Base Again]
+    Q --> E
+
+    C -->|sufficient = true| F[Generate Draft Answer]
     E --> F
 
-    F --> G[reflect_answer]
-    G -->|revision_needed = true| H[use improved_answer]
-    G -->|revision_needed = false| I[keep draft_answer]
+    F --> G[Reflect on Answer]
+    G -->|revision_needed = true| H[Use Improved Answer]
+    G -->|revision_needed = false| I[Keep Draft Answer]
 
     H --> J[Final Answer]
     I --> J
-
-    K[PDF Text] --> L[Chunking]
-    M[Audio Transcript] --> L
-    L --> N[Embeddings]
-    N --> O[ChromaDB]
-    O --> B
-    O --> E
