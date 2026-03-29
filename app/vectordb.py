@@ -8,7 +8,6 @@ from app.config import (
     EMBEDDING_MODEL,
     PROCESSED_TEXT_PATH,
     PROCESSED_AUDIO_TEXT_PATH,
-    PDF_PATH,
 )
 
 

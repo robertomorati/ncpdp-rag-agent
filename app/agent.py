@@ -1,6 +1,7 @@
 import json
 from typing import Any, Dict, List, Tuple
 
+from app.prompts import JUDGE_CONTEXT, REFLECT_ANSWER
 from app.rag import RAGAssistant
 
 
@@ -24,28 +25,7 @@ class NCPDPAgent:
             }
 
         context_text = self.rag.format_contexts(contexts, max_chars=700)
-
-        prompt = f"""
-You are an NCPDP Retrieval Judge.
-
-Return ONLY valid JSON in this format:
-{{
-  "sufficient": true,
-  "reason": "short explanation",
-  "rewritten_query": ""
-}}
-
-Rules:
-- If the context is enough to answer the question, set sufficient=true
-- If the context is weak, incomplete, or from the wrong section (PDF), set sufficient=false
-- If insufficient, provide a better rewritten_query (question)
-
-Question:
-{question}
-
-Retrieved context:
-{context_text}
-"""
+        prompt = JUDGE_CONTEXT.format(question=question, context_text=context_text)
         raw = self.rag.llm.generate_content(prompt).text
         return self._safe_json(
             raw,
@@ -70,36 +50,11 @@ Retrieved context:
         answer: str,
     ) -> Dict[str, Any]:
         context_text = self.rag.format_contexts(contexts, max_chars=700)
-
-        prompt = f"""
-You are an NCPDP Answer Reviewer.
-
-Return ONLY valid JSON in this format:
-{{
-  "grounded": true,
-  "clarity_score": 5,
-  "relevance_score": 5,
-  "revision_needed": false,
-  "feedback": "short explanation",
-  "improved_answer": "final answer text"
-}}
-
-Rules:
-- grounded=false if the answer contains unsupported claims
-- clarity_score and relevance_score must be from 1 to 5
-- revision_needed=true if the answer should be improved
-- improved_answer must contain the revised answer
-- Do not use markdown
-
-Question:
-{question}
-
-Retrieved context:
-{context_text}
-
-Draft answer:
-{answer}
-"""
+        prompt = REFLECT_ANSWER.format(
+            question=question,
+            context_text=context_text,
+            answer=answer,
+        )
         raw = self.rag.llm.generate_content(prompt).text
         return self._safe_json(
             raw,
@@ -114,24 +69,25 @@ Draft answer:
         )
 
     def run(self, question: str) -> Dict[str, Any]:
-        # search with rag agent
-        contexts = self.search_kb(question)
+        tools_used: List[str] = ["search_kb"]
 
-        # always run the judge
+        contexts = self.search_kb(question)
+        tools_used.append("judge_context")
         judgment = self.judge_context(question, contexts)
 
-        # if judment returned sufficienf false try with rewritten query
         rewritten_query = ""
         if not judgment.get("sufficient", False):
-            rewritten_query = judgment.get("rewritten_query", "").strip()
-            if rewritten_query:
+            candidate = (judgment.get("rewritten_query") or "").strip()
+            if candidate:
+                rewritten_query = candidate
+                tools_used.append("search_kb")
                 contexts = self.search_kb(rewritten_query)
 
-        # get the final response
+        tools_used.extend(["generate_answer", "reflect_answer"])
+
         draft_answer = self.generate_answer(question, contexts)
         reflection = self.reflect_answer(question, contexts, draft_answer)
 
-        # improved answer
         final_answer = (
             reflection.get("improved_answer", draft_answer)
             if reflection.get("revision_needed", False)
@@ -146,6 +102,7 @@ Draft answer:
             "reflection": reflection,
             "final_answer": final_answer,
             "contexts_used": len(contexts),
+            "tools_used": tools_used,
         }
 
     def _safe_json(self, raw: str, fallback: Dict[str, Any]) -> Dict[str, Any]:

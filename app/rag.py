@@ -12,6 +12,7 @@ from app.config import (
     TOP_K,
     LLM_MODEL,
 )
+from app.prompts import GENERATE_ANSWER
 
 
 class RAGAssistant:
@@ -53,26 +54,9 @@ class RAGAssistant:
             return "Not found in provided database."
 
         joined_context = self.format_contexts(contexts, max_chars=900)
-
-        prompt = f"""
-You are an assistant specialized in the NCPDP guide, named NCPDP Assistant.
-
-Answer the user's question only using the retrieved context below.
-
-Rules:
-- Answer ONLY based on the provided knowledge base
-- Be concise, clear, and structured
-- Use bullet points when useful
-- If the answer is not clearly supported by the context, say: "Not found in provided database"
-- Do not invent information
-
-User question:
-{question}
-
-Retrieved context:
-{joined_context}
-
-Give a clear and direct answer
-"""
+        prompt = GENERATE_ANSWER.format(
+            question=question,
+            joined_context=joined_context,
+        )
         response = self.llm.generate_content(prompt)
         return getattr(response, "text", "No response generated.").strip()

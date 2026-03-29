@@ -1,3 +1,5 @@
+import json
+
 from app.agent import NCPDPAgent
 
 
@@ -31,6 +33,9 @@ def main() -> None:
 
             print("\n--- Final Answer ---")
             print(result["final_answer"])
+
+            print("\n--- Run log (JSON) ---")
+            print(json.dumps(result, indent=2, ensure_ascii=False))
             print("\n" + "-" * 60 + "\n")
 
         except Exception as exc:
