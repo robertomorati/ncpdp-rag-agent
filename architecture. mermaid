@@ -1,0 +1,23 @@
+graph TD
+    A[User Question] --> B[search_kb]
+    B --> C[judge_context]
+
+    C -->|sufficient = false| D[rewrite query]
+    D --> E[search_kb again]
+
+    C -->|sufficient = true| F[generate_answer]
+    E --> F
+
+    F --> G[reflect_answer]
+    G -->|revision_needed = true| H[use improved_answer]
+    G -->|revision_needed = false| I[keep draft_answer]
+
+    H --> J[Final Answer]
+    I --> J
+
+    K[PDF Text] --> L[Chunking]
+    M[Audio Transcript] --> L
+    L --> N[Embeddings]
+    N --> O[ChromaDB]
+    O --> B
+    O --> E
