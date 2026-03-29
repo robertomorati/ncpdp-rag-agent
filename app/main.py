@@ -1,7 +1,7 @@
 import json
 
 from app.agent import NCPDPAgent
-
+from app.evaluate import save_run_log
 
 def main() -> None:
     agent = NCPDPAgent()
@@ -21,7 +21,7 @@ def main() -> None:
 
         try:
             result = agent.run(question)
-
+            save_run_log(result)
             print("\n--- Judgment ---")
             print(result["judgment"])
 
