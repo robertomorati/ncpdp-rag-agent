@@ -45,7 +45,7 @@ TOP_K=3
 ### 6. Data used
 
 ```bash
-data/raw/eis_transaction_guide_ncpdp_v4.2.pdf
+data/raw/pdf/
 data/raw/ncpdp_audio.mp3
 ```
 
@@ -121,3 +121,6 @@ The difference between 505-F5 and 518-FI is as follows:
 ## Improvements
 
 * Needs improve chunk quality and retrieval precision
+* Add docker/tiltfile
+* Add https://streamlit.io/
+* Add ELABORATE_QUERY primpt

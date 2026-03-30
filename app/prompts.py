@@ -72,3 +72,25 @@ Retrieved context:
 Draft answer:
 {answer}
 """.strip()
+
+ELABORATE_QUERY = """
+You refine search queries for an NCPDP knowledge base.
+
+Return ONLY valid JSON in this format:
+{{
+  "elaborated_query": "one concise question or search phrase for vector retrieval"
+Rules:
+- Use the reviewer feedback to expand, disambiguate, or split the question so retrieval finds better chunks
+- Prefer explicit field IDs, transaction names, or terminology from the feedback if present
+- Output a single string in elaborated_query suitable for embedding search (not a chatty answer)
+- Do not answer the user's question; only produce the retrieval query
+
+Original question:
+{question}
+
+Reviewer feedback:
+{feedback}
+
+Draft answer (for context only; may be incomplete or wrong):
+{draft_answer}
+""".strip()
