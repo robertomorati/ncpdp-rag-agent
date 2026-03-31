@@ -17,7 +17,5 @@ PROCESSED_AUDIO_TEXT_PATH = os.getenv("PROCESSED_AUDIO_TEXT_PATH", "data/process
 
 LLM_MODEL = os.getenv("LLM_MODEL", "models/gemini-2.5-flash")
 
-# TODO implement REFLECTION_SCORE_THRESHOLD and MAX_ELABORATION_PASSES
-# If reflection score are at or below this value, run one elaboration + re-retrieve
 REFLECTION_SCORE_THRESHOLD = int(os.getenv("REFLECTION_SCORE_THRESHOLD", "3"))
-MAX_ELABORATION_PASSES = int(os.getenv("MAX_ELABORATION_PASSES", "1"))
+MAX_ELABORATION_PASSES = int(os.getenv("MAX_ELABORATION_PASSES", "2"))

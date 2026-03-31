@@ -34,7 +34,7 @@ Return ONLY valid JSON in this format:
 Rules:
 - If the context is enough to answer the question, set sufficient=true
 - If the context is weak, incomplete, or from the wrong section (PDF), set sufficient=false
-- If insufficient, provide a better rewritten_query (question)
+- If insufficient, provide a better rewritten_query (question) keep the fields format, example 518-FI
 
 Question:
 {question}
@@ -57,7 +57,7 @@ Return ONLY valid JSON in this format:
 }}
 
 Rules:
-- grounded=false if the answer contains unsupported claims
+- grounded=false if the answer contains unsupported fields
 - clarity_score and relevance_score must be from 1 to 5
 - revision_needed=true if the answer should be improved
 - improved_answer must contain the revised answer
@@ -79,6 +79,8 @@ You refine search queries for an NCPDP knowledge base.
 Return ONLY valid JSON in this format:
 {{
   "elaborated_query": "one concise question or search phrase for vector retrieval"
+}}
+
 Rules:
 - Use the reviewer feedback to expand, disambiguate, or split the question so retrieval finds better chunks
 - Prefer explicit field IDs, transaction names, or terminology from the feedback if present
